@@ -13,6 +13,7 @@ module.exports = (req, res, next) => {       //. THIS IS AN MIDDLEWARE
             })
             .then((data) => {
                 req.user.handle = data.docs[0].data().handle;
+                req.user.imageUrl = data.docs[0].data().imageUrl;
                 return next();
             })
             .catch((err) => {

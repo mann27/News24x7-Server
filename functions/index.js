@@ -5,14 +5,36 @@ const app = express();
 
 const { helloWorld } = require('./handlers/helloworld');
 const { getUsers, login, signup } = require('./handlers/users');
+const {
+    getAllPosts,
+    addNewPost,
+    getPost,
+    addCommentToPost,
+    likePost,
+    unlikePost,
+    deletePost } = require('./handlers/posts');
 
 const FBAuth = require('./utils/FBAuth'); // Firebase Auth Middleware
 
 app.get('/hello', FBAuth, helloWorld); // use it like this.. Add [Bearer token] in Authorization req header
 //so that this can only be accessed by authenticated(logged in) users
 
+// post routes
+app.get('/posts', getAllPosts);
+app.post('/newpost', FBAuth, addNewPost);
+app.get('/post/:postId', getPost);
+app.post('/post/:postId/comment', FBAuth, addCommentToPost);
+app.delete('/post/:postId', FBAuth, deletePost);
+app.get('/post/:postId/like', FBAuth, likePost);
+app.get('/post/:postId/unlike', FBAuth, unlikePost);
+
 app.get('/users', getUsers);
 app.post('/login', login);
 app.post('/signup', signup);
+// Password for login use 123456
+
+
+// API endpoint
+// https://asia-east2-news-sen3.cloudfunctions.net/api/
 
 exports.api = functions.region('asia-east2').https.onRequest(app);

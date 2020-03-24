@@ -21,6 +21,8 @@ exports.addNewPost = function (req, res) {
     const newPost = {
         handleName: req.user.handle,
         title: req.body.title,
+        tags: req.body.tags,
+        reportCount : 0,
         body: req.body.body,
         createdAt: new Date().toISOString(),
         userImage: req.user.imageUrl,
@@ -161,6 +163,48 @@ exports.likePost = function (req, res) {
             res.status(500).json({ error: err.code });
         })
 }
+
+exports.report = function (req, res) {
+
+    const reportdoc = db.collection('report')
+        .where('userHandle', '==', req.user.handle)
+        .where('postId', '==', req.params.postId).limit(1);
+
+    const postDoc = db.doc(`/posts/${req.params.postId}`);
+    let postData = {};
+    postDoc.get()
+        .then((doc) => {
+            if (!doc.exists) {
+                return res.status(404).json({ error: "Post not found" });
+            }
+            postData = doc.data();
+            postData.postId = doc.id;
+            return reportdoc.get();
+        })
+        .then((data) => {
+            if (data.empty) {
+                return db.collection('report').add({
+                    postId: req.params.postId,
+                    userHandle: req.user.handle
+                })
+                    .then(() => {
+                        postData.reportCount++;
+                        return postDoc.update({ reportCount: postData.reportCount });
+                    })
+                    .then(() => {
+                        return res.json(postData);
+                    })
+            }
+            else {
+                return res.status(400).json({ error: "Post already reported" });
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: err.code });
+        })
+}
+
 
 exports.unlikePost = function (req, res) {
 

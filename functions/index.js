@@ -13,7 +13,8 @@ const {
     addCommentToPost,
     likePost,
     unlikePost,
-    deletePost } = require('./handlers/posts');
+    deletePost,
+    report } = require('./handlers/posts');
 
 const FBAuth = require('./utils/FBAuth'); // Firebase Auth Middleware
 
@@ -27,6 +28,7 @@ app.get('/post/:postId', getPost);
 app.post('/post/:postId/comment', FBAuth, addCommentToPost);
 app.delete('/post/:postId', FBAuth, deletePost);
 app.get('/post/:postId/like', FBAuth, likePost);
+app.get('/post/:postId/report', FBAuth, report);
 app.get('/post/:postId/unlike', FBAuth, unlikePost);
 
 app.get('/users', getUsers);

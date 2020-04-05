@@ -16,13 +16,46 @@ exports.getAllPosts = function (req, res) {
         .catch((err) => console.error(err))
 }
 
+exports.getAllPostsMostLiked = function (req, res) {
+    db.collection('posts')
+        .orderBy('likeCount', 'desc').get()
+        .then((data) => {
+            posts = [];
+            data.forEach((doc) => {
+                posts.push({
+                    postId: doc.id,
+                    ...doc.data()
+                });
+            })
+            return res.json(posts);
+        })
+        .catch((err) => console.error(err))
+}
+
+exports.getAllPostsTrending = function (req, res) {
+    db.collection('posts')
+        .orderBy('commentCount', 'desc').get()
+        .then((data) => {
+            posts = [];
+            data.forEach((doc) => {
+                posts.push({
+                    postId: doc.id,
+                    ...doc.data()
+                });
+            })
+            return res.json(posts);
+        })
+        .catch((err) => console.error(err))
+}
+
+
 
 exports.addNewPost = function (req, res) {
     const newPost = {
         handleName: req.user.handle,
         title: req.body.title,
         tags: req.body.tags,
-        reportCount : 0,
+        reportCount: 0,
         body: req.body.body,
         createdAt: new Date().toISOString(),
         userImage: req.user.imageUrl,
@@ -73,7 +106,7 @@ exports.getPost = function (req, res) {
 exports.deletePost = function (req, res) {
 
     const document = db.doc(`posts/${req.params.postId}`);
-
+    const pid = req.params.postId;
     document.get()
         .then((doc) => {
             if (!doc.exists) {

@@ -14,7 +14,9 @@ const {
     likePost,
     unlikePost,
     deletePost,
-    report } = require('./handlers/posts');
+    report,
+    getAllPostsMostLiked, getAllPostsTrending
+} = require('./handlers/posts');
 
 const FBAuth = require('./utils/FBAuth'); // Firebase Auth Middleware
 
@@ -23,6 +25,8 @@ app.get('/hello', FBAuth, helloWorld); // use it like this.. Add [Bearer token] 
 
 // post routes
 app.get('/posts', getAllPosts);
+app.get('/postsml', getAllPostsMostLiked);
+app.get('/postt', getAllPostsTrending);
 app.post('/newpost', FBAuth, addNewPost);
 app.get('/post/:postId', getPost);
 app.post('/post/:postId/comment', FBAuth, addCommentToPost);

@@ -5,7 +5,7 @@ const cors = require('cors');
 app.use(cors());
 
 const { helloWorld } = require('./handlers/helloworld');
-const { getUsers, login, signup, getAuthUser } = require('./handlers/users');
+const { getUsers, login, signup, getAuthUser, uploadUserImage } = require('./handlers/users');
 const {
     getAllPosts,
     addNewPost,
@@ -39,6 +39,7 @@ app.get('/users', getUsers);
 app.get('/user', FBAuth, getAuthUser);
 app.post('/login', login);
 app.post('/signup', signup);
+app.post('/user/image', FBAuth, uploadUserImage);
 // Password for login use 123456
 
 

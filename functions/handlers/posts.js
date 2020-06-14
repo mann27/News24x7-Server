@@ -1,4 +1,5 @@
-const { db } = require('../utils/admin');
+const { db, admin } = require('../utils/admin');
+const firebaseConfig = require('../utils/config');
 
 exports.getAllPosts = function (req, res) {
     db.collection('posts')
@@ -33,8 +34,37 @@ exports.getAllPostsMostLiked = function (req, res) {
 }
 
 exports.getAllPostsTrending = function (req, res) {
+
+    db.collection('posts').get()
+        .then((data) => {
+            data.forEach((doc) => {
+                var trendV = 0;
+                const postData = doc.data();
+                var myDate = new Date("2020-02-10T13:19:11+0000");
+                var ts = myDate.getTime();
+                var currentDate = new Date(postData.createdAt);
+                var tn = currentDate.getTime(); // in milliseconds
+                ts = ts / 100;
+                tn = tn / 100;
+                var x = postData.likeCount
+                var y = (x === 0) ? 0 : 1;
+                var z = (x < 1) ? 1 : x;
+                const postID = doc.id;
+                trendV = Math.log10(z) + (y * (tn - ts)) / 45000;
+                db.doc(`/posts/${postID}`).update({ trendValue: trendV })
+                    .catch((err) => {
+                        console.log(err);
+                        return res.status(500).json({ error: " error in cal of trend" });
+                    })
+            })
+        })
+        .catch((err) => {
+            console.error(err);
+            return res.status(500).json({ "err": "something is wrong" })
+        })
+
     db.collection('posts')
-        .orderBy('commentCount', 'desc').get()
+        .orderBy('trendValue', 'desc').get()
         .then((data) => {
             posts = [];
             data.forEach((doc) => {
@@ -48,8 +78,6 @@ exports.getAllPostsTrending = function (req, res) {
         .catch((err) => console.error(err))
 }
 
-
-
 exports.addNewPost = function (req, res) {
     const newPost = {
         handleName: req.user.handle,
@@ -60,9 +88,10 @@ exports.addNewPost = function (req, res) {
         createdAt: new Date().toISOString(),
         userImage: req.user.imageUrl,
         likeCount: 0,
-        commentCount: 0
+        commentCount: 0,
+        trendValue: 0,
+        postImage: req.body.imgurl
     };
-
     db.collection('posts').add(newPost)
         .then((doc) => {
             const resPost = newPost;

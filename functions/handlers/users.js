@@ -137,6 +137,8 @@ exports.uploadUserImage = (req, res) => {
     const os = require("os");
     const fs = require("fs");
 
+    console.log(req);
+
     const busboy = new BusBoy({ headers: req.headers });
 
     let imageToBeUploaded = {};

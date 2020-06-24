@@ -1,7 +1,8 @@
 # NewsServerSEN3
 
-├─ .vscode
-│  └─ settings.json
+<pre>
+├─ .vscode.       
+│  └─ settings.json.      
 ├─ functions
 │  ├─ handlers
 │  │  ├─ helloworld.js
@@ -21,3 +22,4 @@
 ├─ README.md
 ├─ firebase.json
 └─ package-lock.json
+</pre>

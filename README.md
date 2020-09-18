@@ -1,4 +1,4 @@
-# NewsServerSEN3
+# News24x7-Server
 
 <pre>
 ├─ .vscode.       
